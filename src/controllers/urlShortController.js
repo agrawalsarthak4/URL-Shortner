@@ -65,21 +65,24 @@ let shortenUrl = async function (req, res) {
             return res.status(400).send({ status: false, message: "Invalid Long URL" })
         }
 
-        let longUrlLink = await GET_ASYNC(`${longUrl}`)
+        let longUrlLink1 = await GET_ASYNC(`${longUrl}`)
+        console.log(longUrlLink1)
 
+        let longUrlLink = JSON.parse(longUrlLink1);
+
+        console.log(longUrlLink)
         if (longUrlLink) {
            
-            return res.redirect(302,longUrlLink);
-        }
+            return res.status(200).send({ data: longUrlLink })        }
 
         const shortUrl = baseUrl + '/' + urlCode
 
 
         const urlLink = await Url.create({ longUrl, shortUrl, urlCode })
-       await SET_ASYNC(`${urlLink.longUrl}`,`${urlLink.longUrl}`)
         const getUrl = await Url.findById(urlLink.id).select({ _id: 0, __v: 0 })
-        return res.status(201).send({ data: getUrl })
-    }
+        await SET_ASYNC(`${urlLink.longUrl}`,JSON.stringify(getUrl))
+
+return res.status(201).send({ data: getUrl })    }
 
     catch (err) {
         console.log(err)
