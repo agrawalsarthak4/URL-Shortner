@@ -20,9 +20,6 @@ redisClient.on("connect", async function () {
     console.log("Connected to Redis..");
 });
 
-
-
-
 const SET_ASYNC = promisify(redisClient.SET).bind(redisClient);
 const GET_ASYNC = promisify(redisClient.GET).bind(redisClient);
 
@@ -68,17 +65,18 @@ let shortenUrl = async function (req, res) {
             return res.status(400).send({ status: false, message: "Invalid Long URL" })
         }
 
-    
-        let url = await Url.findOne({ longUrl })
-        if (url) {
-            return res.status(409).send({ status: false, message: "url already Exist" })
+        let longUrlLink = await GET_ASYNC(`${longUrl}`)
+
+        if (longUrlLink) {
+           
+            return res.redirect(302,longUrlLink);
         }
 
         const shortUrl = baseUrl + '/' + urlCode
 
 
         const urlLink = await Url.create({ longUrl, shortUrl, urlCode })
-       await SET_ASYNC(`${urlCode}`,`${urlLink.longUrl}`)
+       await SET_ASYNC(`${urlLink.longUrl}`,`${urlLink.longUrl}`)
         const getUrl = await Url.findById(urlLink.id).select({ _id: 0, __v: 0 })
         return res.status(201).send({ data: getUrl })
     }
@@ -121,9 +119,9 @@ let urlRedrict = async function (req, res) {
             return res.redirect(301,longUrlLink.longUrl);
         }
 
-
-
     }
+
+    
 
     catch (err) {
         console.error(err)
