@@ -57,7 +57,7 @@ let shortenUrl = async function (req, res) {
        
 
         if (!validUrl.isUri(baseUrl)) {
-            return res.status(401).send({ status: false, message: "Invalid base URL" })
+            return res.status(400).send({ status: false, message: "Invalid base URL" })
         }
 
 
@@ -65,7 +65,7 @@ let shortenUrl = async function (req, res) {
         const urlCode = urlCodeData.toLowerCase()
 
         if (!validUrl.isUri(longUrl)) {
-            return res.status(401).send({ status: false, message: "Invalid Long URL" })
+            return res.status(400).send({ status: false, message: "Invalid Long URL" })
         }
 
     
